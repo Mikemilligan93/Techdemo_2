@@ -111,7 +111,11 @@ git remote add origin git@github.com:<you>/<repo>.git
 git push -u origin main
 ```
 
-Then, in the Cloudflare dashboard, go to **Workers & Pages → Create → Pages → Connect to Git** and pick the repo:
+The repo contains `wrangler.jsonc`, so it also works as a **Cloudflare Worker** (static assets):
+build command `npm run build`, deploy command `npx wrangler deploy`. The Worker name must stay
+`techdemo-2` (or change `name` in `wrangler.jsonc` to match).
+
+Alternatively, as a Pages project: in the Cloudflare dashboard, go to **Workers & Pages → Create → Pages → Connect to Git** and pick the repo:
 
 | Setting | Value |
 |---|---|
