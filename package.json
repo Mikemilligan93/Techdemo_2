@@ -1,0 +1,18 @@
+{
+  "name": "techdemo-2",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Top-down 2D tech demo (Phaser 3 + Vite)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

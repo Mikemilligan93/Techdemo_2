@@ -1,0 +1,23 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0d0e14;
+  color: #e0e0e8;
+  font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace;
+  overflow: hidden;
+}
+#game { position: fixed; inset: 0; }
+#game canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+#hud, #help {
+  position: fixed;
+  left: 8px;
+  padding: 6px 8px;
+  background: rgba(13, 14, 20, 0.75);
+  border: 1px solid #3c3c4a;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: pre;
+}
+#hud { top: 8px; }
+#help { bottom: 8px; white-space: normal; max-width: calc(100% - 32px); }
+#help b { color: #f8d848; font-weight: normal; }
