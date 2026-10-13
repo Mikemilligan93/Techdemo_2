@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { PLAYER } from '../config.js';
+import { PLAYER, COMBAT } from '../config.js';
 
 // Sheet rows: 0 down, 1 left, 2 right, 3 up. 4 walk frames per row, frame 0 = idle.
 const ROW = { down: 0, left: 1, right: 2, up: 3 };
@@ -31,15 +31,46 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.facing = 'down';
     this.running = false;
     this.speed = 0;
+    this.hp = COMBAT.playerHp;
+    this.invulnUntil = 0;
+    this.knockUntil = 0;
+    this.isDead = false;
+    this.aim = new Phaser.Math.Vector2(0, 1); // direction the next bolt flies
 
     this.keys = scene.input.keyboard.addKeys({
       up: 'W', down: 'S', left: 'A', right: 'D',
       up2: 'UP', down2: 'DOWN', left2: 'LEFT', right2: 'RIGHT',
       run: 'SHIFT',
+      fire: 'SPACE',
     });
   }
 
-  update() {
+  // Called by the scene when a slime touches the player
+  hurt(fromX, fromY, time) {
+    if (time < this.invulnUntil || this.isDead) return false;
+    this.hp -= 1;
+    this.invulnUntil = time + COMBAT.invulnMs;
+    this.knockUntil = time + COMBAT.knockbackMs;
+    const angle = Phaser.Math.Angle.Between(fromX, fromY, this.x, this.y);
+    this.scene.physics.velocityFromRotation(angle, COMBAT.knockback, this.body.velocity);
+    if (this.hp <= 0) this.isDead = true;
+    return true;
+  }
+
+  revive(x, y, time) {
+    this.setPosition(x, y);
+    this.hp = COMBAT.playerHp;
+    this.isDead = false;
+    this.invulnUntil = time + 2000;
+    this.setVisible(true);
+  }
+
+  update(time = 0) {
+    // blink while invulnerable
+    this.setAlpha(time < this.invulnUntil ? (Math.floor(time / 80) % 2 ? 0.25 : 1) : 1);
+    this.setDepth(2 + this.body.bottom / 100000); // y-sort against enemies
+    if (time < this.knockUntil || this.isDead) return; // no control while knocked back
+
     const k = this.keys;
     const ix = (k.right.isDown || k.right2.isDown ? 1 : 0) - (k.left.isDown || k.left2.isDown ? 1 : 0);
     const iy = (k.down.isDown || k.down2.isDown ? 1 : 0) - (k.up.isDown || k.up2.isDown ? 1 : 0);
@@ -55,6 +86,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // 4-way facing. On diagonals keep the current facing if it still matches one axis,
     // so the sprite doesn't flicker between rows.
     if (ix !== 0 || iy !== 0) {
+      this.aim.set(ix, iy).normalize(); // 8-way aim while moving
       const h = ix < 0 ? 'left' : ix > 0 ? 'right' : null;
       const vt = iy < 0 ? 'up' : iy > 0 ? 'down' : null;
       if (!(h && vt && (this.facing === h || this.facing === vt))) this.facing = h || vt;
@@ -64,6 +96,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.anims.stop();
       this.setFrame(ROW[this.facing] * 4);
+      // standing still: aim where the sprite faces
+      const d = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] }[this.facing];
+      this.aim.set(d[0], d[1]);
     }
   }
 }

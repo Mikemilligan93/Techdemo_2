@@ -36,6 +36,7 @@ npm run preview    # serve dist/ locally
 |---|---|
 | W A S D / arrow keys | Move (8 directions, 4-direction sprite) |
 | Shift | Run |
+| Space | Shoot a magic bolt (8 directions while moving, else where you face) |
 | Z | Cycle camera zoom 1× → 2× → 0.5× |
 | G | Collision debug: red = solid tiles, boxes = physics bodies |
 | H | Hide/show the overlay layer (tree crowns, roof ridges, tall grass) |
@@ -53,6 +54,9 @@ npm run preview    # serve dist/ locally
 - **Camera.** Smooth follow (lerp), clamped to the map edges, zoom levels.
 - **Pixel-perfect scaling.** 32 px tiles, 640×360 internal resolution (20×11 tiles) scaled
   up with nearest-neighbour (an exact 2× at 720p, 3× at 1080p and 4× at 1440p).
+- **Combat.** Slimes wander, chase you within 5 tiles and hurt on contact (knockback,
+  blink, 5 HP, respawn at 0). Magic bolts collide on the ground plane like everything
+  else, stop at walls/trees and fly over water. Tuning lives in `COMBAT` / `ENEMY` in `src/config.js`.
 - **Seeded world generator.** A 100×75 tile world (≈ 5×7 screens): forest border,
   crossroads, a village, a fenced field, and a lake with a bridge.
 
@@ -76,7 +80,8 @@ Techdemo_2/
 │  ├─ scenes/
 │  │  ├─ BootScene.js       # loads real art or builds placeholders
 │  │  └─ GameScene.js       # map, layers, collision, camera, debug toggles
-│  ├─ entities/Player.js    # WASD movement, facing, animation
+│  ├─ entities/Player.js    # WASD movement, facing, animation, HP
+│  ├─ entities/Slime.js     # enemy: wander / chase / hit / die
 │  ├─ world/
 │  │  ├─ tiles.js           # tile index map + which tiles collide
 │  │  ├─ mapGenerator.js    # seeded world builder (3 layers)

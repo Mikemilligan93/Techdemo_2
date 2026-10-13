@@ -27,6 +27,33 @@ export const PLAYER = {
   body: { w: 20, h: 10, offsetX: 6, offsetY: 36 }, // for a 32x48 frame
 };
 
+// Player health / attack
+export const COMBAT = {
+  playerHp: 5,
+  invulnMs: 1000, // after being hit
+  knockback: 9 * TILE, // px/s push when hit
+  knockbackMs: 180,
+  bolt: {
+    speed: 11 * TILE, // px/s
+    range: 7 * TILE, // px travelled before it fizzles
+    cooldownMs: 280,
+    damage: 1,
+  },
+};
+
+export const ENEMY = {
+  count: 25, // slimes alive at once (respawned over time)
+  respawnMs: 6000,
+  hp: 3,
+  wanderSpeed: 1.2 * TILE,
+  chaseSpeed: 2.6 * TILE, // player walks at 5 tiles/s, so you can outrun them
+  aggroRange: 5 * TILE, // starts chasing inside this distance
+  loseRange: 9 * TILE, // gives up outside this distance
+  minSpawnDist: 9 * TILE, // never spawns this close to the player
+  frame: TILE, // 32x32 frames
+  body: { w: 20, h: 12, offsetX: 6, offsetY: 18 },
+};
+
 export const CAMERA = {
   lerp: 0.12, // 1 = locked to the player, lower = smoother/laggier
   zoomLevels: [1, 2, 0.5],
@@ -38,4 +65,6 @@ export const ASSETS = {
   // Build both with: python3 scripts/build_assets.py
   tileset: { file: 'assets/sprites/tileset.png', enabled: true }, // 256x256, 8x8 tiles of 32x32
   player: { file: 'assets/sprites/player.png', enabled: true }, // 128x192, 4x4 frames of 32x48
+  // Frames 0-2 = slime hop cycle, frame 3 = magic bolt. 64x64, 2x2 frames of 32x32.
+  combat: { file: 'assets/sprites/combat.png', enabled: false },
 };

@@ -332,3 +332,44 @@ export function drawPlayerSheet(ctx) {
     }
   });
 }
+
+// ---------- combat sheet: slime (3 frames) + magic bolt ----------
+// 2x2 frames of 16x16: 0 = slime rest, 1 = squash, 2 = mid-hop (stretched), 3 = bolt.
+export const COMBAT_SHEET = { w: 32, h: 32, frameW: 16, frameH: 16 };
+
+function drawSlime(c, f) {
+  const shapes = [
+    { cy: 10, rx: 6.5, ry: 5 }, // rest
+    { cy: 11, rx: 7.5, ry: 4 }, // squash
+    { cy: 8, rx: 5.5, ry: 5.5 }, // airborne
+  ];
+  const { cy, rx, ry } = shapes[f];
+  disc(c, P.shadow, 8, 14.5, f === 2 ? 4 : 6, 1.5);
+  disc(c, P.ink, 8, cy, rx + 1, ry + 1);
+  disc(c, P.w2, 8, cy, rx, ry);
+  disc(c, P.w3, 7.5, cy - 0.5, rx - 1.2, ry - 1.2);
+  rect(c, P.w5, 5, Math.round(cy - ry + 1), 2, 1);
+  rect(c, P.w4, 4, Math.round(cy - ry + 2), 1, 2);
+  const ey = Math.round(cy) - 1;
+  rect(c, P.ink, 6, ey, 1, 2); rect(c, P.ink, 9, ey, 1, 2);
+  rect(c, P.white, 6, ey, 1, 1); rect(c, P.white, 9, ey, 1, 1);
+}
+
+function drawBolt(c) {
+  disc(c, 'rgba(180,220,248,0.35)', 8, 8, 6, 6);
+  disc(c, P.w4, 8, 8, 4, 4);
+  disc(c, P.w5, 8, 8, 2.8, 2.8);
+  disc(c, P.white, 7.5, 7.5, 1.5, 1.5);
+  rect(c, P.white, 2, 4); rect(c, P.w5, 13, 11); rect(c, P.white, 12, 3);
+}
+
+export function drawCombatSheet(ctx) {
+  ctx.clearRect(0, 0, COMBAT_SHEET.w, COMBAT_SHEET.h);
+  for (let i = 0; i < 4; i++) {
+    ctx.save();
+    ctx.translate((i % 2) * 16, Math.floor(i / 2) * 16);
+    ctx.beginPath(); ctx.rect(0, 0, 16, 16); ctx.clip();
+    if (i < 3) drawSlime(ctx, i); else drawBolt(ctx);
+    ctx.restore();
+  }
+}

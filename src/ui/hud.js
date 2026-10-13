@@ -9,6 +9,8 @@ export class Hud {
     if (!this.el || time < this.next) return;
     this.next = time + 200; // 5x per second is plenty
     this.el.textContent =
+      `HP     ${'♥'.repeat(Math.max(0, s.hp))}${'♡'.repeat(Math.max(0, s.maxHp - s.hp))}\n` +
+      `kills  ${s.kills}   slimes ${s.slimes}\n` +
       `FPS    ${s.fps}\n` +
       `seed   ${s.seed}\n` +
       `tile   ${s.tileX}, ${s.tileY}\n` +

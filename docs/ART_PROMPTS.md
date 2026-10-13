@@ -254,6 +254,30 @@ Save as the file name in the table below, then run `python3 scripts/build_assets
 
 ---
 
+## Prompt 7: slime enemy + magic bolt → `combat.png`
+
+```text
+Create a pixel art sprite sheet (1024x1024, square), 16-bit style per the style guide,
+top-down three-quarter view. Layout: an exact 2 x 2 grid of equal square cells
+(each 512x512). Flat magenta (#FF00FF) background everywhere, no text, no grid lines.
+
+Cells 1-3 are the same enemy, a small cute blue slime (a jelly blob with two simple
+dot eyes and a white shine highlight, 1px dark outline), showing a hop cycle:
+1. top-left: resting, round dome shape sitting on the ground
+2. top-right: squashed flat and wide, about to jump
+3. bottom-left: stretched tall and narrow, in the air (smaller shadow below it)
+The slime is the same size and colours in all three cells, centred horizontally and
+sitting on the bottom of its cell, with a small flat dark oval shadow underneath.
+
+Cell 4 (bottom-right): a magic bolt projectile: a small glowing light-blue and white
+energy orb with a few sparkle pixels around it, centred in the cell, no shadow.
+```
+
+Save as `art-source/combat_raw.png`, run `Build Art.command` (or
+`python3 scripts/build_assets.py`), then set `ASSETS.combat.enabled = true` in `src/config.js`.
+
+---
+
 ## After generating
 
 Save the raw images as `art-source/player_raw.png`, `terrain_raw.png`, `nature_raw.png`,

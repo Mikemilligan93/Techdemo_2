@@ -9,6 +9,7 @@ Reads   art-source/player_raw.png  (4x4 walk-cycle grid)
         art-source/terrain_raw.png (4x4 tile grid)          -> tileset quadrant A
         art-source/nature_raw.png  (2 trees + 8 props)      -> tileset quadrant B
         art-source/village_raw.png (4x4 house pieces/props) -> tileset quadrant C
+        art-source/combat_raw.png  (2x2: 3 slime frames + bolt) -> combat.png (optional)
 Writes  public/assets/sprites/tileset.png  (8x8 tiles)
         public/assets/sprites/player.png   (4x4 frames, each TILE x 1.5*TILE)
 
@@ -199,6 +200,31 @@ def player_sheet(path, T):
     return sheet
 
 
+def combat_sheet(path, T):
+    """2x2 grid: slime rest / squash / mid-hop + magic bolt -> 2T x 2T, frames of T x T."""
+    img = load(path)
+    H, W = img[1].shape
+    cw, ch = W / 2, H / 2
+    boxes = [trim(img[1], ((i % 2) * cw, (i // 2) * ch, (i % 2 + 1) * cw, (i // 2 + 1) * ch)) for i in range(4)]
+    sheet = np.zeros((2 * T, 2 * T, 4), np.uint8)
+    slimes = [b for b in boxes[:3] if b]
+    if slimes:
+        # one shared scale so all slime frames are the same size; slime about 3/4 of a tile wide
+        s = max(max(b[2] - b[0] for b in slimes) / (T * 0.75), max(b[3] - b[1] for b in slimes) / (T - 2))
+        for i, b in enumerate(boxes[:3]):
+            if not b:
+                continue
+            ow, oh = max(1, round((b[2] - b[0]) / s)), max(1, round((b[3] - b[1]) / s))
+            sprite = resample(img, b, ow, oh)
+            paste(sheet, sprite, (i % 2) * T + (T - ow) // 2, (i // 2) * T + T - oh)  # sit on the bottom
+    if boxes[3]:
+        b = boxes[3]
+        s = max(b[2] - b[0], b[3] - b[1]) / (T * 0.5)  # bolt about half a tile
+        ow, oh = max(1, round((b[2] - b[0]) / s)), max(1, round((b[3] - b[1]) / s))
+        paste(sheet, resample(img, b, ow, oh), T + (T - ow) // 2, T + (T - oh) // 2)  # centred
+    return sheet
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tile", type=int, default=32, choices=[16, 32])
@@ -212,6 +238,10 @@ def main():
     if os.path.exists(src("player_raw.png")):
         Image.fromarray(player_sheet(src("player_raw.png"), T)).save(os.path.join(a.out, "player.png"))
         print(f"player.png  {4 * T}x{6 * T}")
+
+    if os.path.exists(src("combat_raw.png")):
+        Image.fromarray(combat_sheet(src("combat_raw.png"), T)).save(os.path.join(a.out, "combat.png"))
+        print(f"combat.png  {2 * T}x{2 * T}  (set ASSETS.combat.enabled = true in src/config.js)")
 
     sheet = np.zeros((8 * T, 8 * T, 4), np.uint8)
     for name, fn in [
