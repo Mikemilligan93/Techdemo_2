@@ -4,7 +4,10 @@ import { COLLIDING, T } from '../world/tiles.js';
 import { generateMap } from '../world/mapGenerator.js';
 import { Player } from '../entities/Player.js';
 import { Slime } from '../entities/Slime.js';
+import { Npc } from '../entities/Npc.js';
 import { Hud } from '../ui/hud.js';
+import { SpeechBubble } from '../ui/speechBubble.js';
+import { ELDER } from '../data/wisdom.js';
 
 // Render order (depth):
 //   0 ground -> 1 obstacles -> 2.x player + slimes (y-sorted) -> 2.9 bolts -> 3 above
@@ -40,6 +43,12 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.groundLayer);
     this.physics.add.collider(this.player, this.obstacleLayer);
 
+    // --- NPCs ---
+    this.npcs = world.npcs.map((n) => new Npc(this, n.x * TILE + TILE / 2, n.y * TILE + TILE / 2 - 8, ELDER));
+    this.physics.add.collider(this.player, this.npcs);
+    this.bubble = new SpeechBubble();
+    this.talkingTo = null;
+
     // --- Enemies ---
     Slime.createAnimations(this);
     this.slimes = this.physics.add.group();
@@ -48,6 +57,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.slimes, this.groundLayer); // water
     this.physics.add.collider(this.slimes, this.obstacleLayer);
     this.physics.add.collider(this.slimes, this.slimes);
+    this.physics.add.collider(this.slimes, this.npcs);
     this.physics.add.overlap(this.player, this.slimes, (player, slime) => this.onPlayerTouched(slime));
     this.time.addEvent({
       delay: ENEMY.respawnMs,
@@ -60,6 +70,7 @@ export class GameScene extends Phaser.Scene {
     this.lastShot = -Infinity;
     // Bolts fly over water (ground layer) but stop at walls, trunks, rocks...
     this.physics.add.collider(this.bolts, this.obstacleLayer, (bolt) => this.killBolt(bolt));
+    this.physics.add.overlap(this.bolts, this.npcs, (bolt) => this.killBolt(bolt)); // he is not a target
     this.physics.add.overlap(this.bolts, this.slimes, (bolt, slime) => {
       if (!bolt.active || slime.dying) return;
       slime.hit(bolt.x - bolt.body.velocity.x, bolt.y - bolt.body.velocity.y, COMBAT.bolt.damage, this.time.now);
@@ -85,6 +96,9 @@ export class GameScene extends Phaser.Scene {
 
     // --- Input: demo toggles ---
     const kb = this.input.keyboard;
+    kb.on('keydown-E', () => {
+      if (this.talkingTo) this.bubble.say(this.talkingTo.name, this.talkingTo.nextLine());
+    });
     kb.on('keydown-G', () => this.toggleDebug());
     kb.on('keydown-H', () => this.aboveLayer.setVisible(!this.aboveLayer.visible));
     kb.on('keydown-Z', () => {
@@ -193,8 +207,21 @@ export class GameScene extends Phaser.Scene {
     w.debugGraphic.setDepth(DEPTH.debug + 1).setVisible(this.debugOn);
   }
 
-  update(time) {
+  update(time, delta) {
     this.player.update(time);
+
+    // NPC conversations: talk when the player comes close, stop when they leave
+    for (const npc of this.npcs) {
+      const ev = npc.update(this.player);
+      if (ev === 'start') {
+        this.talkingTo = npc;
+        this.bubble.say(npc.name, npc.nextLine());
+      } else if (ev === 'end' && this.talkingTo === npc) {
+        this.talkingTo = null;
+        this.bubble.hide();
+      }
+    }
+    if (this.talkingTo) this.bubble.update(delta, this, this.talkingTo.x, this.talkingTo.y - 22);
     if (this.player.keys.fire.isDown) this.tryShoot(time);
 
     for (const s of this.slimes.getChildren()) s.think(time, this.player);

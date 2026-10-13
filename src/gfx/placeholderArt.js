@@ -373,3 +373,56 @@ export function drawCombatSheet(ctx) {
     ctx.restore();
   }
 }
+
+// ---------- NPC: village elder ----------
+// 2x2 frames of 16x24: 0 = down, 1 = left, 2 = right, 3 = up.
+export const NPC_SHEET = { w: 32, h: 48, frameW: 16, frameH: 24 };
+
+function drawElder(c, dir) {
+  const side = dir === 'left' || dir === 'right';
+  const flip = dir === 'left' ? -1 : 1;
+  disc(c, P.shadow, 8, 22.5, 5.5, 1.5);
+
+  // staff (held on the right side of the screen, or in front when seen from the side)
+  const sx = side ? 8 + flip * 5 : 13;
+  rect(c, P.b1, sx, 3, 1, 20);
+  rect(c, P.b4, sx - 1, 2, 3, 2);
+  rect(c, P.yellow, sx, 1, 1, 1);
+
+  // long robe
+  rect(c, P.ink, 3, 10, 10, 13);
+  rect(c, P.w1, 4, 11, 8, 11);
+  rect(c, P.w2, 5, 11, 3, 10);
+  rect(c, P.b5, 4, 15, 8, 1); // rope belt
+  rect(c, P.b1, 5, 21, 2, 1); rect(c, P.b1, 9, 21, 2, 1); // feet
+  // sleeves / hands
+  if (!side) { rect(c, P.w1, 2, 12, 2, 5); rect(c, P.skin, 12, 13, 1, 1); rect(c, P.w1, 12, 12, 1, 1); }
+
+  // head
+  rect(c, P.ink, 3, 1, 10, 10);
+  rect(c, P.skin, 4, 2, 8, 8);
+  if (dir === 'down') {
+    rect(c, P.s5, 4, 2, 1, 5); rect(c, P.s5, 11, 2, 1, 5); // white side hair
+    rect(c, P.s4, 5, 4, 2, 1); rect(c, P.s4, 9, 4, 2, 1); // bushy brows
+    rect(c, P.ink, 6, 5, 1, 1); rect(c, P.ink, 9, 5, 1, 1);
+    rect(c, P.white, 4, 7, 8, 3); rect(c, P.white, 5, 10, 6, 3); rect(c, P.s4, 7, 12, 2, 1); // beard
+  } else if (dir === 'up') {
+    rect(c, P.s5, 4, 2, 8, 8); rect(c, P.skin, 6, 2, 4, 2); // bald crown, white hair
+  } else {
+    const front = dir === 'left' ? 4 : 9, back = dir === 'left' ? 9 : 4;
+    rect(c, P.s5, back, 3, 3, 6);
+    rect(c, P.ink, dir === 'left' ? 5 : 10, 5, 1, 1);
+    rect(c, P.white, front, 7, 3, 3); rect(c, P.white, front + (dir === 'left' ? 0 : 0), 10, 3, 3);
+  }
+}
+
+export function drawNpcSheet(ctx) {
+  ctx.clearRect(0, 0, NPC_SHEET.w, NPC_SHEET.h);
+  ['down', 'left', 'right', 'up'].forEach((dir, i) => {
+    ctx.save();
+    ctx.translate((i % 2) * 16, Math.floor(i / 2) * 24);
+    ctx.beginPath(); ctx.rect(0, 0, 16, 24); ctx.clip();
+    drawElder(ctx, dir);
+    ctx.restore();
+  });
+}

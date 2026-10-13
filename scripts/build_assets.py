@@ -10,6 +10,7 @@ Reads   art-source/player_raw.png  (4x4 walk-cycle grid)
         art-source/nature_raw.png  (2 trees + 8 props)      -> tileset quadrant B
         art-source/village_raw.png (4x4 house pieces/props) -> tileset quadrant C
         art-source/combat_raw.png  (2x2: 3 slime frames + bolt) -> combat.png (optional)
+        art-source/npc_raw.png     (2x2: elder down/left/right/up) -> npc.png  (optional)
 Writes  public/assets/sprites/tileset.png  (8x8 tiles)
         public/assets/sprites/player.png   (4x4 frames, each TILE x 1.5*TILE)
 
@@ -174,16 +175,17 @@ def nature_quadrant(sheet, path, T):
         paste(sheet, sprite, x, y)
 
 
-def player_sheet(path, T):
+def player_sheet(path, T, cols=4, rows=4):
+    """Character sheet: cols x rows grid of T x 1.5T frames (player 4x4, NPC 2x2)."""
     fw, fh = T, T * 3 // 2
     img = load(path)
     H, W = img[1].shape
-    cw, ch = W / 4, H / 4
-    boxes = [[trim(img[1], (c * cw, r * ch, (c + 1) * cw, (r + 1) * ch)) for c in range(4)] for r in range(4)]
+    cw, ch = W / cols, H / rows
+    boxes = [[trim(img[1], (c * cw, r * ch, (c + 1) * cw, (r + 1) * ch)) for c in range(cols)] for r in range(rows)]
     max_h = max(b[3] - b[1] for row in boxes for b in row if b)
     max_w = max(b[2] - b[0] for row in boxes for b in row if b)
     s = max(max_h / (fh - 1), max_w / (fw - 1))  # one scale for all frames: consistent size
-    sheet = np.zeros((fh * 4, fw * 4, 4), np.uint8)
+    sheet = np.zeros((fh * rows, fw * cols, 4), np.uint8)
     for r, row in enumerate(boxes):
         ground = max(b[3] for b in row if b)  # shared ground line per row: no vertical jitter
         for c, b in enumerate(row):
@@ -238,6 +240,10 @@ def main():
     if os.path.exists(src("player_raw.png")):
         Image.fromarray(player_sheet(src("player_raw.png"), T)).save(os.path.join(a.out, "player.png"))
         print(f"player.png  {4 * T}x{6 * T}")
+
+    if os.path.exists(src("npc_raw.png")):
+        Image.fromarray(player_sheet(src("npc_raw.png"), T, 2, 2)).save(os.path.join(a.out, "npc.png"))
+        print(f"npc.png     {2 * T}x{3 * T}  (set ASSETS.npc.enabled = true in src/config.js)")
 
     if os.path.exists(src("combat_raw.png")):
         Image.fromarray(combat_sheet(src("combat_raw.png"), T)).save(os.path.join(a.out, "combat.png"))

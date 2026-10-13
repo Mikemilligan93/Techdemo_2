@@ -105,6 +105,8 @@ export function generateMap(seed, W, H) {
     reserve(hx - 1, y - 1, 7, 6);
   }
   setObs(vx - 6, pathY - 4, T.WELL);
+  // The elder stands on the plaza between the 2nd and 3rd house doors
+  const npcs = [{ id: 'elder', x: vx + 2, y: pathY - 4 }];
   setObs(plaza.x + plaza.w - 1, plaza.y, T.BARREL);
   setObs(plaza.x + plaza.w - 1, plaza.y + 1, T.BARREL);
   setObs(plaza.x, plaza.y, T.CRATE);
@@ -174,5 +176,5 @@ export function generateMap(seed, W, H) {
         }
   }
 
-  return { ground, obstacles, above, spawn };
+  return { ground, obstacles, above, spawn, npcs };
 }

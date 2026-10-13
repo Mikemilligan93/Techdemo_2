@@ -278,6 +278,32 @@ Save as `art-source/combat_raw.png`, run `Build Art.command` (or
 
 ---
 
+## Prompt 8: village elder NPC → `npc.png`
+
+```text
+Create a pixel art character sheet (1024x1536, portrait) of a friendly old village elder,
+same 16-bit style and proportions as the hero (16x24 pixel sprite scaled up 16 times,
+every art pixel a crisp block of solid colour). He has a long white beard, bushy white
+eyebrows, a bald head with white hair on the sides, a long dark blue robe with a rope
+belt, and holds a tall wooden staff with a small golden tip. 1px dark outline.
+
+Layout: an exact 2 x 2 grid of equal cells (each 512x768), the same pose standing still
+in each cell, seen from four directions:
+1. top-left: facing DOWN (towards the camera)
+2. top-right: facing LEFT
+3. bottom-left: facing RIGHT
+4. bottom-right: facing UP (back view)
+
+Centred in each cell, feet touching the bottom of the cell, identical size in every cell,
+small flat dark oval shadow under the feet, flat magenta (#FF00FF) background everywhere
+else, no text, no grid lines, no borders.
+```
+
+Save as `art-source/npc_raw.png`, run `Build Art.command`, then set
+`ASSETS.npc.enabled = true` in `src/config.js`.
+
+---
+
 ## After generating
 
 Save the raw images as `art-source/player_raw.png`, `terrain_raw.png`, `nature_raw.png`,

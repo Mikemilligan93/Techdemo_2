@@ -36,6 +36,7 @@ npm run preview    # serve dist/ locally
 |---|---|
 | W A S D / arrow keys | Move (8 directions, 4-direction sprite) |
 | Shift | Run |
+| E | Talk to the elder again (he speaks on his own when you walk up) |
 | Space | Shoot a magic bolt (8 directions while moving, else where you face) |
 | Z | Cycle camera zoom 1× → 2× → 0.5× |
 | G | Collision debug: red = solid tiles, boxes = physics bodies |
@@ -57,6 +58,9 @@ npm run preview    # serve dist/ locally
 - **Combat.** Slimes wander, chase you within 5 tiles and hurt on contact (knockback,
   blink, 5 HP, respawn at 0). Magic bolts collide on the ground plane like everything
   else, stop at walls/trees and fly over water. Tuning lives in `COMBAT` / `ENEMY` in `src/config.js`.
+- **NPC dialogue.** Elder Bram stands on the village plaza. Walk close and he turns to
+  face you and types out a piece of wisdom in a speech bubble. Edit his lines in
+  `src/data/wisdom.js`.
 - **Seeded world generator.** A 100×75 tile world (≈ 5×7 screens): forest border,
   crossroads, a village, a fenced field, and a lake with a bridge.
 
@@ -81,6 +85,9 @@ Techdemo_2/
 │  │  ├─ BootScene.js       # loads real art or builds placeholders
 │  │  └─ GameScene.js       # map, layers, collision, camera, debug toggles
 │  ├─ entities/Player.js    # WASD movement, facing, animation, HP
+│  ├─ entities/Npc.js       # villager: faces + talks to the player when close
+│  ├─ data/wisdom.js        # the elder's name and lines (edit freely)
+│  ├─ ui/speechBubble.js    # DOM speech bubble with typewriter effect
 │  ├─ entities/Slime.js     # enemy: wander / chase / hit / die
 │  ├─ world/
 │  │  ├─ tiles.js           # tile index map + which tiles collide

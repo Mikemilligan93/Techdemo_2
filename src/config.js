@@ -54,6 +54,13 @@ export const ENEMY = {
   body: { w: 20, h: 12, offsetX: 6, offsetY: 18 },
 };
 
+export const NPC = {
+  talkRange: 2.2 * TILE, // start talking when the player is this close
+  leaveRange: 3.5 * TILE, // bubble closes when the player walks this far away
+  typeSpeed: 35, // characters per second (typewriter effect)
+  body: { w: 20, h: 10, offsetX: 6, offsetY: 36 }, // same 32x48 frame as the player
+};
+
 export const CAMERA = {
   lerp: 0.12, // 1 = locked to the player, lower = smoother/laggier
   zoomLevels: [1, 2, 0.5],
@@ -67,4 +74,6 @@ export const ASSETS = {
   player: { file: 'assets/sprites/player.png', enabled: true }, // 128x192, 4x4 frames of 32x48
   // Frames 0-2 = slime hop cycle, frame 3 = magic bolt. 64x64, 2x2 frames of 32x32.
   combat: { file: 'assets/sprites/combat.png', enabled: false },
+  // Village elder, 64x96: 2x2 frames of 32x48 (0 down, 1 left, 2 right, 3 up).
+  npc: { file: 'assets/sprites/npc.png', enabled: true },
 };

@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser';
 import { ASSETS, PLAYER, ENEMY, ART_SCALE } from '../config.js';
 import {
-  drawTileset, drawPlayerSheet, drawCombatSheet,
-  TILESET_SIZE, PLAYER_SHEET, COMBAT_SHEET,
+  drawTileset, drawPlayerSheet, drawCombatSheet, drawNpcSheet,
+  TILESET_SIZE, PLAYER_SHEET, COMBAT_SHEET, NPC_SHEET,
 } from '../gfx/placeholderArt.js';
 
 // Loads the real art when it is enabled in config.js, otherwise builds placeholders.
@@ -19,6 +19,9 @@ export class BootScene extends Phaser.Scene {
     if (ASSETS.combat.enabled) {
       this.load.spritesheet('combat', ASSETS.combat.file, { frameWidth: ENEMY.frame, frameHeight: ENEMY.frame });
     }
+    if (ASSETS.npc.enabled) {
+      this.load.spritesheet('npc', ASSETS.npc.file, { frameWidth: PLAYER.frameW, frameHeight: PLAYER.frameH });
+    }
     this.load.on('loaderror', (file) => console.warn(`[Boot] could not load ${file.src}, using placeholder`));
   }
 
@@ -31,6 +34,9 @@ export class BootScene extends Phaser.Scene {
     }
     if (!this.textures.exists('combat')) {
       this.placeholderTexture('combat', COMBAT_SHEET, drawCombatSheet, true);
+    }
+    if (!this.textures.exists('npc')) {
+      this.placeholderTexture('npc', NPC_SHEET, drawNpcSheet, true);
     }
     this.scene.start('Game');
   }

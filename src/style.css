@@ -21,3 +21,40 @@ html, body {
 #hud { top: 8px; }
 #help { bottom: 8px; white-space: normal; max-width: calc(100% - 32px); }
 #help b { color: #f8d848; font-weight: normal; }
+
+/* NPC speech bubble (positioned from GameScene, font size scales with the canvas) */
+#bubble {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, calc(-100% - 10px)) scale(0.9);
+  transform-origin: 50% 100%;
+  max-width: 22em;
+  min-width: 10em;
+  padding: 0.6em 0.8em 0.5em;
+  background: #f8e0b8;
+  color: #1a1c2c;
+  border: 3px solid #1a1c2c;
+  border-radius: 6px;
+  box-shadow: 0 3px 0 rgba(26, 28, 44, 0.45);
+  font: inherit;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 5;
+}
+#bubble.show { opacity: 1; transform: translate(-50%, calc(-100% - 10px)) scale(1); }
+#bubble::after { /* little tail pointing at the speaker */
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  margin-left: -8px;
+  border: 8px solid transparent;
+  border-top-color: #1a1c2c;
+  border-bottom: 0;
+}
+#bubble .name { font-weight: bold; color: #8c2c1c; margin-bottom: 0.25em; }
+#bubble .text { min-height: 2.7em; }
+#bubble .hint { margin-top: 0.3em; font-size: 0.8em; color: #6b4422; text-align: right; }
